@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Dashboard - Pharmacy & Exams</title>
+    <style>
+        /* === CSS Styling (Design) === */
+        :root {
+            --primary: #2c3e50;
+            --secondary: #18bc9c;
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            color: var(--primary);
+            font-size: 2rem;
+        }
+
+        header p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        /* Navigation Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: var(--card-bg);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            color: var(--primary);
+            transition: 0.3s;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Sections */
+        .section {
+            display: none;
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        h2 {
+            margin-bottom: 15px;
+            color: var(--primary);
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+
+        /* Form Inputs & Buttons */
+        input[type="text"], input[type="number"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        button.action-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        button.action-btn:hover {
+            background: #128f76;
+        }
+
+        /* Lists Display */
+        .item-list {
+            margin-top: 20px;
+            list-style: none;
+        }
+
+        .item-card {
+            background: #f9f9f9;
+            border-left: 4px solid var(--secondary);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .item-card h4 {
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        /* Pomodoro Timer Specifics */
+        .timer-display {
+            font-size: 4rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            color: var(--primary);
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .timer-controls button {
+            width: auto;
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>💊 MasterPrep Dashboard</h1>
+        <p>Offline Workspace for Pharmacy & Govt. Exams (SSC, UPSC)</p>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('mnemonics')">🧠 Mnemonics Vault</button>
+        <button class="tab-btn" onclick="showTab('pomodoro')">⏱️ Pomodoro Timer</button>
+        <button class="tab-btn" onclick="showTab('mcq')">📊 MCQ Tracker</button>
+    </div>
+
+    <!-- 1. Mnemonics Vault Section -->
+    <div id="mnemonics" class="section active">
+        <h2>Save Scientific Tricks & Mnemonics</h2>
+        <input type="text" id="topicName" placeholder="Topic / Drug Class (e.g., Anti-TB Drugs)">
+        <textarea id="mnemonicTrick" rows="3" placeholder="Write your trick here... (e.g., STRIPE: Streptomycin, Rifampin, Isoniazid...)"></textarea>
+        <button class="action-btn" onclick="addMnemonic()">Save Trick</button>
+        <ul class="item-list" id="mnemonicList"></ul>
+    </div>
+
+    <!-- 2. Pomodoro Timer Section -->
+    <div id="pomodoro" class="section">
+        <h2>Focus Timer (Deep Work)</h2>
+        <p style="text-align: center; color: #666;">Use scientifically proven 50/10 or 25/5 rules.</p>
+        <div class="timer-display" id="timer">25:00</div>
+        <div class="timer-controls">
+            <button class="action-btn" style="background:#3498db;" onclick="setTimer(25)">25 Min</button>
+            <button class="action-btn" style="background:#9b59b6;" onclick="setTimer(50)">50 Min</button>
+            <button class="action-btn" style="background:#f1c40f; color:#000;" onclick="setTimer(5)">Break</button>
+        </div>
+        <div class="timer-controls" style="margin-top: 15px;">
+            <button class="action-btn" onclick="startTimer()">Start</button>
+            <button class="action-btn" style="background:#e67e22;" onclick="pauseTimer()">Pause</button>
+            <button class="action-btn" style="background:#e74c3c;" onclick="resetTimer()">Reset</button>
+        </div>
+    </div>
+
+    <!-- 3. MCQ Tracker Section -->
+    <div id="mcq" class="section">
+        <h2>Daily MCQ Progress Tracker</h2>
+        <input type="text" id="examName" placeholder="Exam/Subject (e.g., SSC CGL / Pharmacology)">
+        <div style="display: flex; gap: 10px;">
+            <input type="number" id="marksObtained" placeholder="Marks Got">
+            <input type="number" id="totalMarks" placeholder="Total Marks">
+        </div>
+        <button class="action-btn" onclick="addScore()">Save Score</button>
+        <ul class="item-list" id="scoreList"></ul>
+    </div>
+
+    <script>
+        /* === JavaScript (Logic & Storage) === */
+
+        // Tab Switching Logic
+        function showTab(tabId) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // --- 1. MNEMONICS LOGIC ---
+        let mnemonicsData = JSON.parse(localStorage.getItem('savedMnemonics')) || [];
+
+        function renderMnemonics() {
+            const list = document.getElementById('mnemonicList');
+            list.innerHTML = '';
+            mnemonicsData.forEach((item, index) => {
+                list.innerHTML += `
+                    <li class="item-card">
+                        <h4>${item.topic}</h4>
+                        <p>${item.trick}</p>
+                        <button class="delete-btn" onclick="deleteMnemonic(${index})">X</button>
+                    </li>
+                `;
+            });
+        }
+
+        function addMnemonic() {
+            const topic = document.getElementById('topicName').value;
+            const trick = document.getElementById('mnemonicTrick').value;
+            
+            if(topic === '' || trick === '') {
+                alert("Please fill both Topic and Trick!");
+                return;
+            }
+
+            mnemonicsData.push({ topic, trick });
+            localStorage.setItem('savedMnemonics', JSON.stringify(mnemonicsData));
+            
+            document.getElementById('topicName').value = '';
+            document.getElementById('mnemonicTrick').value = '';
+            renderMnemonics();
+        }
+
+        function deleteMnemonic(index) {
+            mnemonicsData.splice(index, 1);
+            localStorage.setItem('savedMnemonics', JSON.stringify(mnemonicsData));
+            renderMnemonics();
+        }
+
+        // --- 2. POMODORO TIMER LOGIC ---
+        let timerInterval;
+        let timeLeft = 25 * 60; // Default 25 mins in seconds
+        let isRunning = false;
+
+        function updateTimerDisplay() {
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            document.getElementById('timer').innerText = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function setTimer(mins) {
+            clearInterval(timerInterval);
+            isRunning = false;
+            timeLeft = mins * 60;
+            updateTimerDisplay();
+        }
+
+        function startTimer() {
+            if(!isRunning) {
+                isRunning = true;
+                timerInterval = setInterval(() => {
+                    if(timeLeft > 0) {
+                        timeLeft--;
+                        updateTimerDisplay();
+                    } else {
+                        clearInterval(timerInterval);
+                        alert("Time's up! Take a break or start studying.");
+                        isRunning = false;
+                    }
+                }, 1000);
+            }
+        }
+
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            let currentDisplay = document.getElementById('timer').innerText;
+            // A simple logic to reset to either 25, 50, or 5 based on roughly what it was
+            timeLeft = 25 * 60; 
+            updateTimerDisplay();
+        }
+
+        // --- 3. MCQ TRACKER LOGIC ---
+        let scoresData = JSON.parse(localStorage.getItem('savedScores')) || [];
+
+        function renderScores() {
+            const list = document.getElementById('scoreList');
+            list.innerHTML = '';
+            // Show latest first
+            [...scoresData].reverse().forEach((item, index) => {
+                let percentage = ((item.got / item.total) * 100).toFixed(1);
+                // Simple color coding based on score
+                let color = percentage >= 70 ? 'green' : (percentage >= 50 ? 'orange' : 'red');
+                
+                // Actual index in original array for deletion
+                let originalIndex = scoresData.length - 1 - index; 
+
+                list.innerHTML += `
+                    <li class="item-card">
+                        <h4>${item.exam} - <span style="color:${color}">${percentage}%</span></h4>
+                        <p>Score: ${item.got} / ${item.total} | Date: ${item.date}</p>
+                        <button class="delete-btn" onclick="deleteScore(${originalIndex})">X</button>
+                    </li>
+                `;
+            });
+        }
+
+        function addScore() {
+            const exam = document.getElementById('examName').value;
+            const got = document.getElementById('marksObtained').value;
+            const total = document.getElementById('totalMarks').value;
+            
+            if(exam === '' || got === '' || total === '') {
+                alert("Please fill all fields!");
+                return;
+            }
+
+            const today = new Date().toLocaleDateString('en-GB'); // DD/MM/YYYY format
+
+            scoresData.push({ exam, got: Number(got), total: Number(total), date: today });
+            localStorage.setItem('savedScores', JSON.stringify(scoresData));
+            
+            document.getElementById('examName').value = '';
+            document.getElementById('marksObtained').value = '';
+            document.getElementById('totalMarks').value = '';
+            renderScores();
+        }
+
+        function deleteScore(index) {
+            scoresData.splice(index, 1);
+            localStorage.setItem('savedScores', JSON.stringify(scoresData));
+            renderScores();
+        }
+
+        // Initial render when page loads
+        window.onload = () => {
+            renderMnemonics();
+            renderScores();
+            updateTimerDisplay();
+        }
+    </script>
+</body>
+</html>
